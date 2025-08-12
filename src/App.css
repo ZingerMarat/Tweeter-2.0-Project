@@ -1,17 +1,25 @@
 * {
   box-sizing: border-box;
 }
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .tweet-box-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 30rem;
 }
 
 .tweet-box {
   position: relative;
-  width: 400px;
-  height: 200px;
+  width: 100%;
+  height: 10rem;
 }
 
 .tweet-input {
@@ -36,10 +44,31 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   gap: 16px;
 }
 
 .tweet {
   border: 1px solid #eee;
-  width: 400px;
+  width: 100%;
+  background-color: #343a40;
+}
+
+.tweet-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+}
+
+.tweet-owner,
+.tweet-time {
+  font-size: 12px;
+  color: gray;
+}
+
+.tweet-text {
+  font-size: 14px;
+  color: white;
+  padding: 0 1rem 0 1rem;
+  margin-top: 0;
 }
