@@ -1,15 +1,20 @@
 import { useState, useMemo, useEffect, useContext } from "react"
 import axios from "axios"
 import { UserContext } from "../context/UserContext.jsx"
+import { TweetsContext } from "../context/TweetsContext.jsx"
 
 const MAX_LEN = 140
 
 function TweetBox() {
   const [text, setText] = useState("")
   //const [tweets, setTweets] = useState(localStorage.getItem("tweets") ? JSON.parse(localStorage.getItem("tweets")) : [])
-  const [tweets, setTweets] = useState(null)
+
+  //const [tweets, setTweets] = useState(null)
+  const { tweets, setTweets } = useContext(TweetsContext)
+
   //const [userName, setUserName] = useState("marat_zinger")
   const { userName, setUserName } = useContext(UserContext)
+
   const [loading, setLoading] = useState(false)
 
   const overLimit = text.length > MAX_LEN
@@ -26,7 +31,8 @@ function TweetBox() {
     saveTweet(t)
 
     //update states
-    //setTweets((prev) => [t, ...prev])
+    setTweets((prev) => [t, ...prev])
+
     setText("")
   }
 
@@ -37,7 +43,7 @@ function TweetBox() {
 `,
         newTweet
       )
-      await loadTweets()
+      //wait loadTweets()
     } catch (err) {
       console.error(err)
     }
@@ -49,6 +55,8 @@ function TweetBox() {
       const res =
         await axios.get(`https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVja21nZHpubnNudXN2bXlmdnNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODU5NjAsImV4cCI6MjA3MDA2MTk2MH0.D82S0DBivlsXCCAdpTRB3YqLqTOIP7MUj-p1R8Lj9Jo
 `)
+
+      // dispatch({type: SAVE, data: newTweet})
       setTweets(res.data.sort((a, b) => new Date(b.date) - new Date(a.date)))
     } catch (err) {
       console.error(err)
@@ -59,6 +67,13 @@ function TweetBox() {
 
   useEffect(() => {
     loadTweets()
+
+    const timeOutId = setInterval(() => {
+      loadTweets()
+      console.log("tweets updated")
+    }, 100000)
+
+    return () => clearTimeout(timeOutId)
   }, [])
 
   return (
@@ -68,13 +83,13 @@ function TweetBox() {
         <button className="tweet-button" onClick={handleTweet} disabled={disabled}>
           {loading ? "Posting..." : "Tweet"}
         </button>
-        {overLimit && <div className="tweet-error">The tweet can't contain more then 140 chars</div>}
+        {overLimit && <div className="tweet-error">{`The tweet can't contain more then ${MAX_LEN} chars`}</div>}
       </div>
 
       {tweets && (
         <div className="tweet-list">
-          {tweets.map((tweet) => (
-            <div key={tweet.id} className="tweet">
+          {tweets.map((tweet, index) => (
+            <div key={index} className="tweet">
               <div className="tweet-header">
                 <span className="tweet-owner">{tweet.userName}</span>
                 <span className="tweet-time">{tweet.date}</span>
