@@ -1,9 +1,5 @@
 import { useState } from "react"
-import reactLogo from "./assets/react.svg"
-import viteLogo from "/vite.svg"
 import "./App.css"
-import { Textarea, Button } from "@mantine/core"
-import TweetBox from "./components/TweetBox.jsx"
 import Home from "./pages/Home.jsx"
 import User from "./pages/User.jsx"
 import NavBar from "./components/NavBar.jsx"
@@ -19,7 +15,7 @@ function App() {
     <>
       <UserContext value={{ userName, setUserName }}>
         <TweetsContext value={{ tweets, setTweets }}>
-          <BrowserRouter>
+          <BrowserRouter basename="/Tweeter-2.0-Project">
             <NavBar />
             <Routes>
               <Route path="/" element={<Home />} />
