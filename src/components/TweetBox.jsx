@@ -3,16 +3,15 @@ import axios from "axios"
 import { UserContext } from "../context/UserContext.jsx"
 import { TweetsContext } from "../context/TweetsContext.jsx"
 
+import { supabase } from "../lib/supabaseClient.js"
+
 const MAX_LEN = 140
 
 function TweetBox() {
   const [text, setText] = useState("")
-  //const [tweets, setTweets] = useState(localStorage.getItem("tweets") ? JSON.parse(localStorage.getItem("tweets")) : [])
 
-  //const [tweets, setTweets] = useState(null)
   const { tweets, setTweets } = useContext(TweetsContext)
 
-  //const [userName, setUserName] = useState("marat_zinger")
   const { userName, setUserName } = useContext(UserContext)
 
   const [loading, setLoading] = useState(false)
@@ -23,9 +22,6 @@ function TweetBox() {
   const handleTweet = () => {
     if (disabled) return
     const t = { content: text.trim(), date: new Date().toISOString(), userName }
-
-    //save to local storage
-    //localStorage.setItem("tweets", JSON.stringify([t, ...tweets]))
 
     //save to the server
     saveTweet(t)
@@ -38,12 +34,7 @@ function TweetBox() {
 
   const saveTweet = async (newTweet) => {
     try {
-      const res = await axios.post(
-        `https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVja21nZHpubnNudXN2bXlmdnNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODU5NjAsImV4cCI6MjA3MDA2MTk2MH0.D82S0DBivlsXCCAdpTRB3YqLqTOIP7MUj-p1R8Lj9Jo
-`,
-        newTweet
-      )
-      //wait loadTweets()
+      const { err } = await supabase.from("tweets").insert(newTweet)
     } catch (err) {
       console.error(err)
     }
@@ -51,13 +42,10 @@ function TweetBox() {
 
   const loadTweets = async () => {
     setLoading(true)
-    try {
-      const res =
-        await axios.get(`https://uckmgdznnsnusvmyfvsb.supabase.co/rest/v1/Tweets?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVja21nZHpubnNudXN2bXlmdnNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0ODU5NjAsImV4cCI6MjA3MDA2MTk2MH0.D82S0DBivlsXCCAdpTRB3YqLqTOIP7MUj-p1R8Lj9Jo
-`)
 
-      // dispatch({type: SAVE, data: newTweet})
-      setTweets(res.data.sort((a, b) => new Date(b.date) - new Date(a.date)))
+    try {
+      const { data: tweets } = await supabase.from("tweets").select()
+      setTweets(tweets.sort((a, b) => new Date(b.date) - new Date(a.date)))
     } catch (err) {
       console.error(err)
     } finally {
