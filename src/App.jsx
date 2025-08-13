@@ -4,13 +4,26 @@ import viteLogo from "/vite.svg"
 import "./App.css"
 import { Textarea, Button } from "@mantine/core"
 import TweetBox from "./components/TweetBox.jsx"
+import Home from "./pages/Home.jsx"
+import User from "./pages/User.jsx"
+import NavBar from "./components/NavBar.jsx"
+import { BrowserRouter, Route, Routes } from "react-router"
+import { UserContext } from "./context/UserContext.jsx"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [userName, setUserName] = useState("marat_zinger")
 
   return (
     <>
-      <TweetBox />
+      <UserContext value={{ userName, setUserName }}>
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/user" element={<User />} />
+          </Routes>
+        </BrowserRouter>
+      </UserContext>
     </>
   )
 }

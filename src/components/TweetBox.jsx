@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useContext } from "react"
 import axios from "axios"
+import { UserContext } from "../context/UserContext.jsx"
 
 const MAX_LEN = 140
 
@@ -7,12 +8,12 @@ function TweetBox() {
   const [text, setText] = useState("")
   //const [tweets, setTweets] = useState(localStorage.getItem("tweets") ? JSON.parse(localStorage.getItem("tweets")) : [])
   const [tweets, setTweets] = useState(null)
-  const [userName, setUserName] = useState("marat_zinger")
+  //const [userName, setUserName] = useState("marat_zinger")
+  const { userName, setUserName } = useContext(UserContext)
   const [loading, setLoading] = useState(false)
 
   const overLimit = text.length > MAX_LEN
   const disabled = overLimit || text.trim() === ""
-  const counter = useMemo(() => `${text.length}/${MAX_LEN}`, [text])
 
   const handleTweet = () => {
     if (disabled) return
@@ -67,6 +68,7 @@ function TweetBox() {
         <button className="tweet-button" onClick={handleTweet} disabled={disabled}>
           {loading ? "Posting..." : "Tweet"}
         </button>
+        {overLimit && <div className="tweet-error">The tweet can't contain more then 140 chars</div>}
       </div>
 
       {tweets && (
